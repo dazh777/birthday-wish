@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>大州生日许愿贴</title>
+    <style>
+        :root {
+            --primary-color: #ff7675;
+            --bg-color: #ffeaa7;
+            --card-bg: #ffffff;
+            --text-color: #2d3436;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #fab1a0 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            margin: auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #636e72;
+            margin-bottom: 25px;
+        }
+
+        /* 倒计时样式 */
+        .countdown-box {
+            background: #fff5f5;
+            border: 2px dashed var(--primary-color);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .countdown-title {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        #timer {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d63031;
+            letter-spacing: 1px;
+        }
+
+        /* 愿望清单样式 */
+        .wish-list {
+            list-style: none;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .wish-item {
+            background: #f9f9f9;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            /* 默认模糊隐藏 */
+            filter: blur(5px);
+            user-select: none;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        /* 解锁后的样式 */
+        .wish-item.unlocked {
+            filter: blur(0);
+            user-select: auto;
+            pointer-events: auto;
+            background: #fff;
+        }
+
+        .lock-notice {
+            color: #b2bec3;
+            font-size: 14px;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎂 大州生日许愿贴 🎁</h1>
+        <p class="subtitle">属于大州的专属生日秘密基地</p >
+
+        <!-- 倒计时模块 -->
+        <div class="countdown-box">
+            <div class="countdown-title">⏳ 距离解锁愿望还有</div>
+            <div id="timer">正在计算中...</div>
+        </div>
+
+        <hr style="border: 0; height: 1px; background: #eee; margin: 20px 0;">
+
+        <!-- 愿望清单 -->
+        <ul class="wish-list">
+            <li class="wish-item" id="wish1">1、一顿和张金亮一起吃的漂亮饭 😋</li>
+            <li class="wish-item" id="wish2">2、一个捣蒜器 ⚙️</li>
+            <li class="wish-item" id="wish3">3、一个三件套 🤩</li>
+        </ul>
+
+        <p class="lock-notice" id="notice">🔒 愿望内容已锁，2026年6月14日自动解锁查看</p >
+    </div>
+
+    <script>
+        // 设置目标解锁日期：2026年6月14日 00:00:00
+        const targetDate = new Date("2026/06/14 00:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            const timerElement = document.getElementById("timer");
+            const noticeElement = document.getElementById("notice");
+            const wishItems = document.querySelectorAll(".wish-item");
+
+            // 如果到达或超过目标时间
+            if (difference <= 0) {
+                timerElement.innerHTML = "🎉 生日快乐！愿望已解锁！ 🎉";
+                noticeElement.innerHTML = "🔓 愿望已全部解锁，快去实现它们吧！";
+                
+                // 移除模糊效果
+                wishItems.forEach(item => {
+                    item.classList.add("unlocked");
+                });
+                return;
+            }
+
+            // 计算剩余的天、小时、分、秒
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            // 显示倒计时
+            timerElement.innerHTML = `${days}天 ${hours}时 ${minutes}分 ${seconds}秒`;
+        }
+
+        // 每秒更新一次倒计时
+        setInterval(updateCountdown, 1000);
+        // 页面加载时立即执行一次防止白屏
+        updateCountdown();
+    </script>
+</body>
+</html>
